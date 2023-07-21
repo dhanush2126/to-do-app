@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'surya_docker'
         DOCKER_IMAGE_NAME = 'surya2126/to-do'
+        DOCKER_CONTAINER_NAME = 'TO-DO-APP'
         DOCKER_IMAGE_TAG = "latest-${env.BUILD_NUMBER}"
         GIT_URL = 'https://github.com/dhanush2126/to-do-app.git'
     }
@@ -50,10 +51,18 @@ pipeline {
                 }
             }
         }
+        stage('delete existing container') {
+            steps {
+                script {
+                    sh "docker rm -f ${DOCKER_CONTAINER_NAME}"
+        
+                }
+            }
+        }
         stage('create a container') {
             steps {
                 script {
-                    sh "docker run -dp 127.0.0.1:3000:3000 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker run --name ${DOCKER_CONTAINER_NAME} -dp 127.0.0.1:3000:3000 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
         
                 }
             }

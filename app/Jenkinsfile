@@ -62,7 +62,7 @@ pipeline {
         stage('create a container') {
             steps {
                 script {
-                    sh "docker run --name ${DOCKER_CONTAINER_NAME} -dp 127.0.0.1:3000:3000 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker run --name ${DOCKER_CONTAINER_NAME} -dp 65.0.76.238:3000:3000 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
         
                 }
             }

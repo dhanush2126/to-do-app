@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_HUB_CREDENTIALS = 'surya_docker'
+        DOCKER_IMAGE_NAME = 'surya2126/to-do'
+        DOCKER_IMAGE_TAG = "latest-${env.BUILD_NUMBER}"
+        GIT_URL = 'https://github.com/dhanush2126/to-do-app'
+    }
+    
+    stages {
+         stage('cloning git url') {
+            steps {
+                git url: "${GIT_URL}"
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
+                        sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+                    }
+                }
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
+                        sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+        stage('Clean Up Local Image') {
+            steps {
+                script {
+                    sh "docker rmi ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                }
+            }
+        }
+        stage('Pulling docker image') {
+            steps {
+                script {
+                    sh "docker pull ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                }
+            }
+        }
+        stage('create a container') {
+            steps {
+                script {
+                    sh "docker run -dp 127.0.0.1:3000:3000 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+        
+                }
+            }
+        }
+    }
+}
